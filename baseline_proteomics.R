@@ -1,5 +1,5 @@
 #------------------------------------------------------------------------
-# Contact Zoe Ji (chji1@bwh.harvard.edu) for any bug report.
+# Contact Zoe Ji (chji1@bwh.harvard.edu) or Lauren Breithaupt (lbreithaupt@mgh.harvard.edu) for any bug report.
 # Last update: 6.16.2023
 #------------------------------------------------------------------------
 library(dplyr)
@@ -10,11 +10,11 @@ library(ggpubr)
 load("~/npx_baseline.Rdata") ### our baseline dataset that contains protein expression (npx values) and clinical data. 
 load("~/protein.RData") ### the list of proteins that we are going to analyze (N=73)
 #------------------------------------------------------------------------
-# Main 1: account for age.
+# Main Model 1: account for age.
 #------------------------------------------------------------------------
 
 # (1.1) AN/atyp-AN vs. HC
-npx_baseline$group <- factor(npx_baseline$group, levels = c("HC", "ED")) ### we labeled AN/atyp-AN combined group as ED here.
+npx_baseline$group <- factor(npx_baseline$group, levels = c("HC", "ED")) ### AN/atyp-AN grup was combined and labeled as ED group.
 group2_main1 <- lapply(protein, function(i){
   model <- lm(npx_baseline[,i] ~ group + ageyrs, data=npx_baseline)
   c(i, summary(model)$coef[2,])
@@ -28,7 +28,7 @@ group2_main1 <- group2_main1 %>%
   dplyr::arrange(p.value)
 
 # (1.2) AN vs. atyp-AN vs. HC
-### we use low_wt variable to categorize AN (low_wt) and atyp-AN (non_low_wt)
+### we created a low_wt variables to categorize AN (lw_wt) and atyp-AN (non_low_wt)
 npx_baseline$low_wt <- ifelse(npx_baseline$group=="HC", "hc", npx_baseline$low_wt)
 npx_baseline$low_wt <- factor(npx_baseline$low_wt, levels = c("hc", "low_wt", "non_low_wt"))
 npx_baseline$low_wt1 <- relevel(npx_baseline$low_wt, ref = "low_wt")
@@ -63,7 +63,7 @@ bmi_main1 <- bmi_main1 %>%
 
 #------------------------------------------------------------------------
 # Main 2: account for age, smoking status (Y/N), body temperature, 
-# antihistamine use, psychiatric medication use, psychiatric comorbidity (Y/N)
+# antihistamine use (Y/N), any psychiatric medication use(Y/N), psychiatric comorbidity (Y/N)
 #------------------------------------------------------------------------
 npx_baseline$smokerm <- factor(npx_baseline$smokerm, levels=c(0,1), labels=c("No", "Yes"))
 npx_baseline$temperature <- as.numeric(npx_baseline$temperature)
@@ -89,6 +89,7 @@ group2_main2 <- group2_main2 %>%
 group3_main2 <- lapply(protein, function(i){
   model1 <- lm(npx_baseline[,i] ~ low_wt + ageyrs + smokerm + temperature + 
                  antihis + psych_med_new + ksads_any, data=npx_baseline)
+  ### change reference group to get the third comparison
   model2 <- lm(npx_baseline[,i] ~ low_wt1 + ageyrs + smokerm + temperature + 
                  antihis + psych_med_new + ksads_any, data=npx_baseline)
   test <- cbind(i, rbind(summary(model1)$coef[2:3,], summary(model2)$coef[3,]), 
@@ -117,7 +118,7 @@ bmi_main2 <- bmi_main2 %>%
   dplyr::arrange(p.value)
 
 #------------------------------------------------------------------------
-# Supplementary 1: removed smoking subjects, account for age
+# Secondary Model 1: removed subjects who were smoking, account for age
 #------------------------------------------------------------------------
 npx1 <- npx_baseline %>% dplyr::filter(smokerm!="Yes")
 
@@ -163,7 +164,7 @@ bmi_sup1 <- bmi_sup1 %>%
   dplyr::arrange(p.value)
 
 #------------------------------------------------------------------------
-# Supplementary 2: removed subjects whose body temperature>99, account for age
+# Secondary Model 2: removed subjects whose body temperature>99, account for age
 #------------------------------------------------------------------------
 npx2 <- npx_baseline %>% dplyr::filter(temperature <= 99)
 
@@ -209,7 +210,7 @@ bmi_sup2 <- bmi_sup2 %>%
   dplyr::arrange(p.value)
 
 #------------------------------------------------------------------------
-# Supplementary 3: account for age and number of psychiatric diagnoses
+# Secondary Model 3: account for age and number of psychiatric diagnoses
 #------------------------------------------------------------------------
 
 # (5.1) AN/atyp-AN vs. HC
@@ -254,7 +255,7 @@ bmi_sup3 <- bmi_sup3 %>%
   dplyr::arrange(p.value)
 
 #------------------------------------------------------------------------
-# Supplementary 4: account for age and anxiety t score
+# Secondary Model 4: account for age and anxiety t score
 #------------------------------------------------------------------------
 npx_baseline$anxiety_t_score <- as.numeric(npx_baseline$anxiety_t_score)
 
@@ -300,7 +301,7 @@ bmi_sup4 <- bmi_sup4 %>%
   dplyr::arrange(p.value)
 
 #------------------------------------------------------------------------
-# Supplementary 5: account for age and antidepressants use (Y/N)
+# Secondary Model 5: account for age and antidepressants use (Y/N)
 #------------------------------------------------------------------------
 npx_baseline$psych_med_antidepress <- factor(npx_baseline$psych_med_antidepress,
                                              levels = c(0,1),
@@ -348,7 +349,7 @@ bmi_sup5 <- bmi_sup5 %>%
   dplyr::arrange(p.value)
 
 #------------------------------------------------------------------------
-# Supplementary 6: account for age and antihistamine+NSAIDs use (Y/N)
+# Secondary Model 6: account for age and antihistamine+NSAIDs use (Y/N)
 #------------------------------------------------------------------------
 npx_baseline$antihis_NSAID <- factor(npx_baseline$antihis_NSAID, levels=c(0, 1), labels=c("No", "Yes"))
 
