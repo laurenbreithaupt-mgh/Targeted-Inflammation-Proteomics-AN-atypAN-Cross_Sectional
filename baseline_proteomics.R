@@ -561,3 +561,27 @@ ggarrange(
   h1, h2, h3, labels = c("A", "B", "C"), nrow=1,
   common.legend = TRUE, legend = "right"
 ) 
+
+#------------------------------------------------------------------------
+# Since you made it to the end of our code - run the code below for a fun surprise!
+#------------------------------------------------------------------------
+
+plot.new()
+plot.window(xlim = c(0, 10), ylim = c(0, 10))
+rect(3, 3, 7, 7, col = "gray", border = NA)
+rect(4, 7, 6, 9, col = "gray", border = NA)
+points(4.5, 8.5, pch = 15, col = "white", cex = 2)
+points(5.5, 8.5, pch = 15, col = "white", cex = 2)
+polygon(c(5, 5.5, 4.5), c(8, 7.5, 7.5), col = "pink", border = NA)
+polygon(c(3, 4, 4), c(8, 9, 7), col = "gray", border = NA)
+polygon(c(7, 6, 7), c(8, 9, 7), col = "gray", border = NA)
+segments(4, 7.5, 3, 7, lwd = 2)
+segments(4, 7.5, 3, 8, lwd = 2)
+segments(4, 7.5, 3, 9, lwd = 2)
+segments(6, 7.5, 7, 7, lwd = 2)
+segments(6, 7.5, 7, 8, lwd = 2)
+segments(6, 7.5, 7, 9, lwd = 2)
+text(5, 1, "Coding Cat! Meow!", col = "gray30", cex = 1.5, font = 2, adj = 0.5)
+# Optional: Save the plot as an image file
+# dev.copy(png, "cat.png")
+# dev.off()
